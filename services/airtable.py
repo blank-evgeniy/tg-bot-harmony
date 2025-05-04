@@ -1,30 +1,34 @@
+import logging
 from config import AIRTABLE_TOKEN, BASE_ID
 from pyairtable import Api
 
 class AirtableManager:
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(AirtableManager, cls).__new__(cls)
-            cls._instance.init()
-        return cls._instance
-    
     def __init__(self):
         self.api = Api(AIRTABLE_TOKEN)
         self.base_id = BASE_ID
+        self.clients_table = self.api.table(self.base_id, "Клиенты")
+    
+    async def check_user_exists(self, telegram_id: int):
+        formula = f"{{TelegramID}} = '{telegram_id}'"
+        record = self.clients_table.first(formula=formula)
         
-    def get_table(self, table_name):
-        """Возвращает объект таблицы"""
-        return self.api.table(self.base_id, table_name)
+        return record is not None
+
+    async def create_client(self, telegram_id: int, name: str, phone: str) -> bool:
+        client_data = {
+            "TelegramID": telegram_id,
+            "Имя": name,
+            "Телефон": phone,
+        }
+
+        try:
+            record = self.clients_table.create(client_data)
+
+            logging.info(f"Создан клиент: {record['id']}")
+            return True
+        
+        except Exception as e:
+            logging.error(f"Ошибка создания клиента: {e}")
+            return False
     
-    def get_all_records(self, table_name):
-        """Получает все записи из таблицы"""
-        table = self.get_table(table_name)
-        return table.all()
-    
-    def get_free_slots(self):
-        """Пример специализированного метода для услуг"""
-        table = self.get_table("Слоты")
-        records = table.all()
-        return [record['fields'] for record in records if 'fields' in record]
+airtable = AirtableManager()
