@@ -2,6 +2,7 @@ from aiogram import types, Router, F
 from aiogram.filters import Command
 from keyboards.main_menu_kb import main_menu_kb
 from keyboards.request_contact_kb import request_contact_kb
+from keyboards.categories_kb import categories_kb
 from services.airtable import airtable
 from aiogram.fsm.context import FSMContext
 
@@ -21,19 +22,22 @@ async def command_start(message: types.Message) -> None:
     await message.answer(welcome_message.format(Name=message.from_user.first_name), reply_markup=main_menu_kb())
 
 @router.message(F.text == "📅 Записаться")
-async def answer_yes(message: types.Message, state: FSMContext):
+async def booking_handle(message: types.Message, state: FSMContext):
     """Обработчик команды '📅 Записаться'"""
 
     has_client = await airtable.check_user_exists(message.from_user.id)
 
     if (has_client):
-        await message.answer("Выберите категорию:")
+        categories = await airtable.get_categories()
+        keyboard = categories_kb(categories)
+
+        await message.answer("Выберите категорию:", reply_markup=keyboard)
     else:
         await message.answer("Для записи нам нужны ваши данные.\n", reply_markup=request_contact_kb())
         await state.set_state(RegistrationStates.waiting_for_phone)
 
 @router.message(F.text == "📞 Контакты")
-async def answer_yes(message: types.Message):
+async def contacts_handle(message: types.Message):
     """Обработчик команды '📞 Контакты'"""
 
     contact_text = (

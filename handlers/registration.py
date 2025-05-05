@@ -11,7 +11,7 @@ router = Router()
 
 
 @router.callback_query(F.data == "share_phone")
-async def request_phone(callback: types.CallbackQuery, state: FSMContext):
+async def request_phone(callback: types.CallbackQuery):
   await callback.message.answer(
         "Нажмите кнопку ниже чтобы автоматически отправить телефон:",
         reply_markup=enter_phone_kb()

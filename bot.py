@@ -7,7 +7,7 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from config import TG_TOKEN
-from handlers import registration, start, unexpected
+from handlers import registration, start, unexpected, categories
 
 # Логирование
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +19,7 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(start.router)
     dp.include_router(registration.router)
+    dp.include_router(categories.router)
     dp.include_router(unexpected.router)
 
     await dp.start_polling(bot)

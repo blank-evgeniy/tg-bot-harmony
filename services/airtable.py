@@ -6,7 +6,13 @@ class AirtableManager:
     def __init__(self):
         self.api = Api(AIRTABLE_TOKEN)
         self.base_id = BASE_ID
+
+        # Таблицы из БД
         self.clients_table = self.api.table(self.base_id, "Клиенты")
+        self.categories_table = self.api.table(self.base_id, "Категории")
+        self.procedures_table = self.api.table(self.base_id, "Процедуры")
+        self.masters_table = self.api.table(self.base_id, "Мастера")
+        self.slots_table = self.api.table(self.base_id, "Слоты")
     
     async def check_user_exists(self, telegram_id: int):
         formula = f"{{TelegramID}} = '{telegram_id}'"
@@ -30,5 +36,14 @@ class AirtableManager:
         except Exception as e:
             logging.error(f"Ошибка создания клиента: {e}")
             return False
+        
+    async def get_categories(self):
+        records = self.categories_table.all()
+        return records
+    
+    async def get_procedures_by_category(self, category):
+        formula = f"FIND('{category}', {{Вид}})"
+        records = self.procedures_table.all(formula=formula)
+        return records
     
 airtable = AirtableManager()

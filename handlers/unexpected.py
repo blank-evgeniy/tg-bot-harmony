@@ -1,4 +1,4 @@
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.types import Message
 from keyboards.main_menu_kb import main_menu_kb
 
