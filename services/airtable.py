@@ -46,4 +46,13 @@ class AirtableManager:
         records = self.procedures_table.all(formula=formula)
         return records
     
+    async def get_category_days(self, category):
+        formula = f"AND(FIND('{category}', {{Категория}}), NOT({{Занято}}), TODAY() >= {{Дата}})"
+        records = self.slots_table.all(formula=formula, fields=["Дата", "Время начала", "Время окончания"])
+        return records
+    
+    async def get_category_name(self, id) -> str:
+        record = self.categories_table.get(id)
+        return record["fields"]["Название"] 
+    
 airtable = AirtableManager()
