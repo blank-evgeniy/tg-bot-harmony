@@ -55,4 +55,8 @@ class AirtableManager:
         record = self.categories_table.get(id)
         return record["fields"]["Название"] 
     
+    async def get_procedure_data(self, id) -> str:
+        record = self.procedures_table.get(id)
+        return record
+    
 airtable = AirtableManager()
