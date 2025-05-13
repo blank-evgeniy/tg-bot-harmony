@@ -47,7 +47,7 @@ class AirtableManager:
         return records
     
     async def get_category_days(self, category):
-        formula = f"AND(FIND('{category}', {{Категория}}), NOT({{Занято}}), TODAY() >= {{Дата}})"
+        formula = f"AND(FIND('{category}', {{Категория}}), NOT({{Занято}}), TODAY() <= {{Дата}})"
         records = self.slots_table.all(formula=formula, fields=["Дата", "Время начала", "Время окончания"])
         return records
     

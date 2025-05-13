@@ -16,7 +16,30 @@ async def command_start(message: types.Message) -> None:
 
     welcome_message = (
     '💖 <b>{Name}, добро пожаловать в салон красоты "Harmony"!</b> 💖\n\n'
+    'Если хотите записаться на услугу онлайн, выберите в нижнем меню соответствующее действие.\n\n'
     "<i>Мы не просто создаем образы — мы раскрываем вашу природную красоту и дарим неповторимые эмоции!</i> 💫"
+    )
+
+    await message.answer(welcome_message.format(Name=message.from_user.first_name), reply_markup=main_menu_kb())
+
+@router.message(Command("reminder2"))
+async def command_start(message: types.Message) -> None:
+    """Обработчик команды /a"""
+
+    welcome_message = (
+    '<b>Анастасия, скоро увидимся!</b> ✨ \n'
+    'Через 2 часа у вас запись на услугу "Стрижка". Пожалуйста, не опаздывайте.\n\n'
+    )
+
+    await message.answer(welcome_message.format(Name=message.from_user.first_name), reply_markup=main_menu_kb())
+
+@router.message(Command("reminder24"))
+async def command_start(message: types.Message) -> None:
+    """Обработчик команды /b"""
+
+    welcome_message = (
+    '<b>Привет, Анастасия!</b> ☺️\n'
+    ' Завтра в 13:00 у вас запись на услугу "Стрижка". Не забудьте заглянуть к нам. До встречи!\n\n'
     )
 
     await message.answer(welcome_message.format(Name=message.from_user.first_name), reply_markup=main_menu_kb())

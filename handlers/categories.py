@@ -127,7 +127,7 @@ async def back_to_dates(callback: CallbackQuery, state: FSMContext):
 async def handle_date_selection(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
 
-    dates = data.get('current_category_dates')
+    selected_date = data.get('current_selected_date')
     start_time = callback.data.split("_")[1]
     end_time = callback.data.split("_")[2]
     procedure_id = data.get('current_procedure_id')
@@ -140,7 +140,7 @@ async def handle_date_selection(callback: CallbackQuery, state: FSMContext):
     message = (
         "Вы успешно записались на услугу!\n"
         f"Услуга: {procedure_data['fields']['Название']}\n"
-        f"Дата: {dates[0]['fields']['Дата']}\n"
+        f"Дата: {selected_date}\n"
         f"Время: {format_seconds_to_time(start_time)} - {format_seconds_to_time(end_time)}\n"
         f"Стоимость: {procedure_data['fields']['Стоимость']}₽"
     )
