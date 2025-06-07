@@ -9,7 +9,6 @@ from keyboards.main_menu_kb import main_menu_kb
 
 router = Router()
 
-
 @router.callback_query(F.data == "share_phone")
 async def request_phone(callback: types.CallbackQuery):
   await callback.message.answer(

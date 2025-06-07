@@ -19,6 +19,11 @@ class AirtableManager:
         record = self.clients_table.first(formula=formula)
         
         return record is not None
+    
+    async def get_client_id(self, telegram_id: int):
+        formula = f"{{TelegramID}} = '{telegram_id}'"
+        record = self.clients_table.first(formula=formula)
+        return record["id"]
 
     async def create_client(self, telegram_id: int, name: str, phone: str) -> bool:
         client_data = {
@@ -48,7 +53,7 @@ class AirtableManager:
     
     async def get_category_days(self, category):
         formula = f"AND(FIND('{category}', {{Категория}}), NOT({{Занято}}), TODAY() <= {{Дата}})"
-        records = self.slots_table.all(formula=formula, fields=["Дата", "Время начала", "Время окончания"])
+        records = self.slots_table.all(formula=formula, fields=["Дата", "Время начала", "Время окончания", "id"])
         return records
     
     async def get_category_name(self, id) -> str:
@@ -58,5 +63,28 @@ class AirtableManager:
     async def get_procedure_data(self, id) -> str:
         record = self.procedures_table.get(id)
         return record
+    
+    async def book_slot(self, slot_id: str, client_id: str, procedure_id: str) -> bool:
+        try:
+            update_data = {
+                "Занято": True,
+                "Клиент": [client_id],
+                "Процедура": [procedure_id]
+            }
+
+            slot_data = self.slots_table.first(formula=f"{{id}} = '{slot_id}'")
+  
+            if not slot_data or slot_data["fields"].get("Занято", False):
+                print(slot_data)
+                return False
+            
+            self.slots_table.update(slot_data["id"], update_data)
+            logging.info(f"Успешная запись: клиент {client_id} на слот {slot_id}")
+            return True
+            
+        except Exception as e:
+            logging.error(f"Ошибка записи на слот {slot_id}: {e}")
+            return False
+
     
 airtable = AirtableManager()

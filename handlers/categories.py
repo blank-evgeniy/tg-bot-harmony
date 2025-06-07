@@ -130,12 +130,18 @@ async def handle_date_selection(callback: CallbackQuery, state: FSMContext):
     selected_date = data.get('current_selected_date')
     start_time = callback.data.split("_")[1]
     end_time = callback.data.split("_")[2]
+    slot_id = callback.data.split("_")[3]
     procedure_id = data.get('current_procedure_id')
     procedure_data = await airtable.get_procedure_data(procedure_id)
+    client_id = await airtable.get_client_id(callback.from_user.id)
 
-    print(start_time, end_time)
+    is_booked = await airtable.book_slot(slot_id, client_id, procedure_id)
 
-    # произвести запись в БД
+    if not is_booked:
+        await state.clear()
+        await callback.message.edit_text("Произошла ошибка при записи. Пожалуйста, попробуйте еще раз.")
+        await callback.answer()
+        return
 
     message = (
         "Вы успешно записались на услугу!\n"
@@ -149,5 +155,5 @@ async def handle_date_selection(callback: CallbackQuery, state: FSMContext):
         message
     )
 
-    state.clear()
-    callback.answer()
+    await state.clear()
+    await callback.answer()

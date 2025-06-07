@@ -9,6 +9,7 @@ def times_kb(dates):
     for date in dates:
         start_time = date['fields']['Время начала']
         end_time = date['fields']['Время окончания']
+        slot_id = date['fields']['id']
         unique_ranges.add((start_time, end_time)) 
 
     sorted_ranges = sorted(unique_ranges)
@@ -17,7 +18,7 @@ def times_kb(dates):
         formatted_range = f"{format_seconds_to_time(start_time)} - {format_seconds_to_time(end_time)}" 
         builder.button(
             text=formatted_range,
-            callback_data=f"time_{start_time}_{end_time}" 
+            callback_data=f"time_{start_time}_{end_time}_{slot_id}" 
         )
 
     builder.add(InlineKeyboardButton(
