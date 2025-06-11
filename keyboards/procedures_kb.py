@@ -15,8 +15,8 @@ def procedures_kb(procedures_data):
         ))
 
     builder.add(InlineKeyboardButton(
-        text="Назад к категориям",
-        callback_data="back_to_categories"
+        text="Назад",
+        callback_data="back_to_masters"
     ))
 
     builder.adjust(1)

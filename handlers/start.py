@@ -5,6 +5,7 @@ from keyboards.request_contact_kb import request_contact_kb
 from keyboards.categories_kb import categories_kb
 from services.airtable import airtable
 from aiogram.fsm.context import FSMContext
+from aiogram.types import FSInputFile
 
 from states.registration_states import RegistrationStates
 
@@ -15,34 +16,15 @@ async def command_start(message: types.Message) -> None:
     """Обработчик команды /start"""
 
     welcome_message = (
-    '💖 <b>{Name}, добро пожаловать в салон красоты "Harmony"!</b> 💖\n\n'
+    '💖 <b>{Name}, добро пожаловать в салон красоты!</b> 💖\n\n'
     'Если хотите записаться на услугу онлайн, выберите в нижнем меню соответствующее действие.\n\n'
     "<i>Мы не просто создаем образы — мы раскрываем вашу природную красоту и дарим неповторимые эмоции!</i> 💫"
     )
 
-    await message.answer(welcome_message.format(Name=message.from_user.first_name), reply_markup=main_menu_kb())
+    photo_path = "images/welcome.jpg"
+    photo = FSInputFile(photo_path)
 
-@router.message(Command("reminder2"))
-async def command_start(message: types.Message) -> None:
-    """Обработчик команды /a"""
-
-    welcome_message = (
-    '<b>Анастасия, скоро увидимся!</b> ✨ \n'
-    'Через 2 часа у вас запись на услугу "Стрижка". Пожалуйста, не опаздывайте.\n\n'
-    )
-
-    await message.answer(welcome_message.format(Name=message.from_user.first_name), reply_markup=main_menu_kb())
-
-@router.message(Command("reminder24"))
-async def command_start(message: types.Message) -> None:
-    """Обработчик команды /b"""
-
-    welcome_message = (
-    '<b>Привет, Анастасия!</b> ☺️\n'
-    ' Завтра в 13:00 у вас запись на услугу "Стрижка". Не забудьте заглянуть к нам. До встречи!\n\n'
-    )
-
-    await message.answer(welcome_message.format(Name=message.from_user.first_name), reply_markup=main_menu_kb())
+    await message.answer_photo(photo=photo, caption=welcome_message.format(Name=message.from_user.first_name), reply_markup=main_menu_kb())
 
 @router.message(F.text == "📅 Записаться")
 async def booking_handle(message: types.Message, state: FSMContext):
@@ -73,4 +55,29 @@ async def contacts_handle(message: types.Message):
         "Пн-Вс: 10:00 - 21:00"
     )
 
-    await message.answer(contact_text)
+    photo_path = "images/contacts.jpg"
+    photo = FSInputFile(photo_path)
+
+    await message.answer_photo(photo=photo, caption=contact_text)
+
+@router.message(Command("reminder2"))
+async def command_start(message: types.Message) -> None:
+    """Обработчик команды /reminder2"""
+
+    message_text = (
+    '<b>Анастасия, скоро увидимся!</b> ✨ \n'
+    'Через 2 часа у вас запись на услугу "Стрижка". Пожалуйста, не опаздывайте.\n\n'
+    )
+
+    await message.answer(message_text.format(Name=message.from_user.first_name), reply_markup=main_menu_kb())
+
+@router.message(Command("reminder24"))
+async def command_start(message: types.Message) -> None:
+    """Обработчик команды /reminder24"""
+
+    message_text = (
+    '<b>Привет, Анастасия!</b> ☺️\n'
+    ' Завтра в 13:00 у вас запись на услугу "Стрижка". Не забудьте заглянуть к нам. До встречи!\n\n'
+    )
+
+    await message.answer(message_text.format(Name=message.from_user.first_name), reply_markup=main_menu_kb())
